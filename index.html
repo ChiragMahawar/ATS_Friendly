@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO Meta Tags -->
+    <title>ATS Pro — Free Resume Optimizer & Builder | Beat Applicant Tracking Systems</title>
+    <meta name="description"
+        content="ATS Pro is a free, browser-based resume optimizer. Check your resume's ATS compatibility, get instant feedback, auto-fix issues, and build ATS-compliant resumes — all completely free.">
+    <meta name="keywords"
+        content="ATS resume checker, resume builder, ATS optimizer, applicant tracking system, resume score, free resume tool, ATS-friendly resume, resume keywords, resume format checker, job application tool">
+    <meta name="author" content="ATS Pro">
+    <meta name="robots" content="index, follow, max-snippet:-1">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ATS Pro — Free Resume Optimizer & Builder">
+    <meta property="og:description"
+        content="Check your resume's ATS score, get instant feedback, and build optimized resumes for free. No signup required.">
+    <meta property="og:site_name" content="ATS Pro">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ATS Pro — Free Resume Optimizer & Builder">
+    <meta name="twitter:description"
+        content="Free ATS resume checker and builder. Get instant feedback, fix issues, and download optimized resumes.">
+
+    <!-- Theme & Mobile -->
+    <meta name="theme-color" content="#0b1120">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ATS Pro",
+        "description": "Free ATS resume checker and builder. Analyze your resume for Applicant Tracking System compatibility, get instant feedback, auto-fix issues, and build ATS-compliant resumes.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires a modern browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "ATS compatibility scoring",
+            "Instant formatting feedback",
+            "Auto-fix resume issues",
+            "Free resume builder with live preview",
+            "PDF and Word export",
+            "ATS best practices guide",
+            "Projects and certifications sections"
+        ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { primary: '#6366f1', secondary: '#8b5cf6', accent: '#06b6d4', dark: '#0b1120', card: 'rgba(15,23,42,0.65)' },
+                        ats: { green: '#34d399', yellow: '#fbbf24', red: '#f87171' }
+                    },
+                    fontFamily: { heading: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+                    borderRadius: { xl: '16px', '2xl': '20px' },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
+                        'slide-up': 'slide-up 0.5s ease-out',
+                    },
+                    keyframes: {
+                        'float': { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        'glow-pulse': { '0%, 100%': { boxShadow: '0 0 20px rgba(99,102,241,0.3)' }, '50%': { boxShadow: '0 0 40px rgba(99,102,241,0.6)' } },
+                        'slide-up': { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- ═══════════════ PARALLAX BACKGROUND ═══════════════ -->
+    <div class="parallax-bg" aria-hidden="true">
+        <div class="parallax-orb parallax-orb-1"></div>
+        <div class="parallax-orb parallax-orb-2"></div>
+        <div class="parallax-orb parallax-orb-3"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <nav class="navbar backdrop-blur-xl bg-brand-dark/80 border-b border-white/5">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-file-contract"></i> ATS<span>Pro</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <button class="nav-btn active transition-all duration-200" data-target="checkerView">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> ATS Checker
+                </button>
+                <button class="nav-btn transition-all duration-200" data-target="builderView">
+                    <i class="fa-solid fa-pen-ruler"></i> Resume Builder
+                </button>
+                <button class="nav-btn transition-all duration-200" data-target="tipsView">
+                    <i class="fa-solid fa-lightbulb"></i> ATS Tips
+                </button>
+            </div>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- ========== ATS CHECKER VIEW ========== -->
+        <section id="checkerView" class="view active-view">
+            <div class="container">
+                <div class="hero" data-animate="fade-up">
+                    <div
+                        class="hero-badge inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm border border-white/10 shadow-lg shadow-brand-primary/10">
+                        <i class="fa-solid fa-bolt text-yellow-400"></i> 100% Free — No Signup Required
+                    </div>
+                    <h1 class="hero-title font-heading tracking-tight">Optimize Your Resume<br>for <span
+                            class="gradient-text bg-clip-text">ATS Success</span>
+                    </h1>
+                    <p class="hero-subtitle text-slate-400 text-lg leading-relaxed max-w-2xl mx-auto">Upload your resume
+                        to instantly analyze its Applicant Tracking System
+                        compatibility, uncover missing keywords, and get a free optimized version.</p>
+                </div>
+
+                <!-- Feature Highlights -->
+                <div class="feature-grid" data-animate="fade-up">
+                    <div
+                        class="feature-card glass-panel group hover:scale-[1.03] transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/10 hover:border-brand-primary/30">
+                        <div class="feature-icon group-hover:animate-float"><i
+                                class="fa-solid fa-magnifying-glass-chart"></i></div>
+                        <h4 class="font-heading font-semibold">Deep Analysis</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Scans formatting, keywords, section structure,
+                            and readability.</p>
+                    </div>
+                    <div
+                        class="feature-card glass-panel group hover:scale-[1.03] transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/10 hover:border-brand-primary/30">
+                        <div class="feature-icon group-hover:animate-float"><i
+                                class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <h4 class="font-heading font-semibold">Auto Fix</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Get an ATS-friendly version instantly if
+                            issues are found.</p>
+                    </div>
+                    <div
+                        class="feature-card glass-panel group hover:scale-[1.03] transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/10 hover:border-brand-primary/30">
+                        <div class="feature-icon group-hover:animate-float"><i class="fa-solid fa-file-arrow-down"></i>
+                        </div>
+                        <h4 class="font-heading font-semibold">Export Ready</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Download your resume in PDF or Word format for
+                            free.</p>
+                    </div>
+                </div>
+
+                <div class="checker-container" data-animate="fade-up">
+                    <!-- Upload -->
+                    <div class="upload-area glass-panel hover:border-brand-primary/40 transition-all duration-300 cursor-pointer"
+                        id="dropZone">
+                        <i
+                            class="fa-solid fa-cloud-arrow-up upload-icon text-5xl text-brand-primary/70 animate-float"></i>
+                        <h3 class="font-heading font-semibold text-xl mt-4">Drag & Drop your resume</h3>
+                        <p class="text-slate-400 text-sm mt-1">or click to browse files (PDF, DOCX, TXT)</p>
+                        <input type="file" id="resumeUpload" hidden accept=".pdf,.doc,.docx,.txt" />
+                        <button
+                            class="btn btn-primary mt-5 hover:scale-105 transition-transform duration-200 shadow-lg shadow-brand-primary/25"
+                            id="uploadBtn">
+                            <i class="fa-solid fa-folder-open"></i> Browse Files
+                        </button>
+                        <!-- Upload Feature Badges -->
+                        <div class="upload-badges mt-4 flex flex-wrap justify-center gap-2">
+                            <span
+                                class="upload-badge px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-slate-400">ATS
+                                Analysis</span>
+                            <span
+                                class="upload-badge px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-slate-400">Auto
+                                Fix</span>
+                            <span
+                                class="upload-badge px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-slate-400">100%
+                                Free</span>
+                        </div>
+                        <div class="file-name hidden" id="fileName"></div>
+                    </div>
+
+                    <!-- Analyzing -->
+                    <div class="analyzing-state hidden" id="analyzingState">
+                        <div class="spinner"></div>
+                        <h3 class="mt-4">Analyzing Resume...</h3>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="text-sm mt-2" id="analyzeStep">Scanning formatting...</p>
+                    </div>
+
+                    <!-- Results -->
+                    <div class="results-area hidden" id="resultsArea">
+                        <div class="score-card glass-panel">
+                            <div class="score-ring-wrapper">
+                                <svg class="score-ring" viewBox="0 0 120 120">
+                                    <circle class="score-ring-bg" cx="60" cy="60" r="52" />
+                                    <circle class="score-ring-fill" id="scoreRingFill" cx="60" cy="60" r="52" />
+                                </svg>
+                                <span class="score-text" id="atsScoreText">0%</span>
+                            </div>
+                            <div class="score-info">
+                                <h3 id="scoreTitle">Analyzing...</h3>
+                                <p id="scoreDesc">Your resume is being evaluated.</p>
+                            </div>
+                        </div>
+
+                        <!-- Before / After Comparison (PixelForge-inspired) -->
+                        <div class="compare-card glass-panel" id="compareCard">
+                            <h4 class="compare-heading"><i class="fa-solid fa-arrow-right-arrow-left"></i> Before vs
+                                After Fix</h4>
+                            <div class="compare-bars">
+                                <div class="compare-item">
+                                    <span class="compare-label">Current</span>
+                                    <div class="compare-bar-track">
+                                        <div class="compare-bar-fill compare-before" id="compareBeforeBar"></div>
+                                    </div>
+                                    <span class="compare-value" id="compareBeforeVal">0%</span>
+                                </div>
+                                <div class="compare-item">
+                                    <span class="compare-label">After Fix</span>
+                                    <div class="compare-bar-track">
+                                        <div class="compare-bar-fill compare-after" id="compareAfterBar"></div>
+                                    </div>
+                                    <span class="compare-value" id="compareAfterVal">0%</span>
+                                </div>
+                            </div>
+                            <p class="compare-note">Use Auto-Fix to reach the estimated improved score.</p>
+                        </div>
+
+                        <div class="feedback-grid" id="feedbackGrid">
+                            <!-- Dynamic feedback cards inserted by JS -->
+                        </div>
+
+                        <div class="action-bar mt-6 flex flex-wrap gap-3 justify-center">
+                            <button
+                                class="btn btn-primary hover:scale-105 transition-all duration-200 shadow-lg shadow-brand-primary/30 hover:shadow-brand-primary/50"
+                                id="fixResumeBtn">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Fix & Build (Free)
+                            </button>
+                            <button class="btn btn-outline hover:scale-105 transition-all duration-200 hover:bg-white/5"
+                                id="checkAnotherBtn">
+                                <i class="fa-solid fa-arrow-rotate-right"></i> Check Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== RESUME BUILDER VIEW ========== -->
+        <section id="builderView" class="view hidden-view">
+            <div class="container container-large">
+                <div class="builder-layout">
+                    <!-- Form Controls -->
+                    <div class="builder-controls panel glass-panel" data-animate="fade-up">
+                        <div class="panel-header"
+                            style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+                            <div>
+                                <h2><i class="fa-solid fa-pen-to-square"></i> Edit Details</h2>
+                                <p class="text-sm">All changes update the live preview instantly</p>
+                            </div>
+                            <button class="btn btn-outline btn-sm" id="resetBuilderBtn" title="Reset all fields">
+                                <i class="fa-solid fa-rotate-right"></i> Reset
+                            </button>
+                        </div>
+
+                        <div class="accordion">
+                            <!-- Personal Info -->
+                            <div class="accordion-item active">
+                                <button class="accordion-btn">
+                                    <i class="fa-regular fa-user"></i> Personal Details
+                                    <i class="fa-solid fa-chevron-down chevron"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <div class="form-group">
+                                        <label for="fullName">Full Name</label>
+                                        <input type="text" id="fullName" placeholder="John Doe" value="John Doe"
+                                            maxlength="100" pattern="^[a-zA-Z\s\-']{2,100}$" required
+                                            title="Please enter a valid name (letters, spaces, hyphens, or apostrophes only)">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" id="email" placeholder="john@example.com"
+                                                value="john@example.com" maxlength="255" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="phone">Phone</label>
+                                            <input type="tel" id="phone" placeholder="(555) 123-4567"
+                                                value="(555) 123-4567" maxlength="20" pattern="^[0-9\+\-\(\)\s]{7,20}$"
+                                                title="Valid phone number required">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="location">Location</label>
+                                            <input type="text" id="location" placeholder="New York, NY"
+                                                value="New York, NY" maxlength="150"
+                                                pattern="^[a-zA-Z0-9\s,\.\-]{2,150}$">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="linkedin">LinkedIn / Website</label>
+                                            <input type="url" id="linkedin"
+                                                placeholder="https://linkedin.com/in/johndoe"
+                                                value="https://linkedin.com/in/johndoe" maxlength="255">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="summary">Professional Summary</label>
+                                        <textarea id="summary" rows="4" maxlength="1500"
+                                            placeholder="Max 1500 characters...">Results-driven software engineer with 5+ years of experience building scalable web applications. Proficient in JavaScript, React, and Node.js. Passionate about writing clean, maintainable code and solving complex technical problems.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Experience -->
+                            <div class="accordion-item">
+                                <button class="accordion-btn">
+                                    <i class="fa-solid fa-briefcase"></i> Work Experience
+                                    <i class="fa-solid fa-chevron-down chevron"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <div id="experienceList">
+                                        <div class="form-card experience-item">
+                                            <button class="delete-entry-btn" title="Remove"><i
+                                                    class="fa-solid fa-trash-can"></i></button>
+                                            <div class="form-group"><label>Company</label><input type="text"
+                                                    class="exp-company" value="TechNova Inc." maxlength="150"></div>
+                                            <div class="form-group"><label>Job Title</label><input type="text"
+                                                    class="exp-title" value="Senior Developer" maxlength="100"></div>
+                                            <div class="form-row">
+                                                <div class="form-group"><label>Start</label><input type="text"
+                                                        class="exp-start" value="Jan 2021" maxlength="20"></div>
+                                                <div class="form-group"><label>End</label><input type="text"
+                                                        class="exp-end" value="Present" maxlength="20"></div>
+                                            </div>
+                                            <div class="form-group"><label>Description (hyphens for bullets)</label>
+                                                <textarea class="exp-desc" rows="4" maxlength="2500">- Led a team of 4 developers to build a modern SaaS product serving 100k+ users.
+- Optimized database queries, reducing load times by 40%.
+- Implemented CI/CD pipelines reducing deployment time by 60%.</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm w-full mt-2" id="addExperienceBtn"><i
+                                            class="fa-solid fa-plus"></i> Add Experience</button>
+                                </div>
+                            </div>
+
+                            <!-- Education -->
+                            <div class="accordion-item">
+                                <button class="accordion-btn">
+                                    <i class="fa-solid fa-graduation-cap"></i> Education
+                                    <i class="fa-solid fa-chevron-down chevron"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <div id="educationList">
+                                        <div class="form-card education-item">
+                                            <button class="delete-entry-btn" title="Remove"><i
+                                                    class="fa-solid fa-trash-can"></i></button>
+                                            <div class="form-group"><label>Institution</label><input type="text"
+                                                    class="edu-school" value="University of Technology" maxlength="150">
+                                            </div>
+                                            <div class="form-group"><label>Degree</label><input type="text"
+                                                    class="edu-degree" value="B.Sc. in Computer Science"
+                                                    maxlength="100"></div>
+                                            <div class="form-row">
+                                                <div class="form-group"><label>Start</label><input type="text"
+                                                        class="edu-start" value="Sep 2016" maxlength="20"></div>
+                                                <div class="form-group"><label>End</label><input type="text"
+                                                        class="edu-end" value="May 2020" maxlength="20"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm w-full mt-2" id="addEducationBtn"><i
+                                            class="fa-solid fa-plus"></i> Add Education</button>
+                                </div>
+                            </div>
+
+                            <!-- Internships (Optional) -->
+                            <div class="accordion-item">
+                                <button class="accordion-btn">
+                                    <i class="fa-solid fa-building-user"></i> Internships <span
+                                        class="text-xs text-slate-500 ml-1">(Optional)</span>
+                                    <i class="fa-solid fa-chevron-down chevron"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <div id="internshipsList"></div>
+                                    <button class="btn btn-outline btn-sm w-full mt-2" id="addInternshipBtn"><i
+                                            class="fa-solid fa-plus"></i> Add Internship</button>
+                                </div>
+                            </div>
+
+                            <!-- Projects (Optional) -->
+                            <div class="accordion-item">
+                                <button class="accordion-btn">
+                                    <i class="fa-solid fa-diagram-project"></i> Projects <span
+                                        class="text-xs text-slate-500 ml-1">(Optional)</span>
+                                    <i class="fa-solid fa-chevron-down chevron"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <div id="projectsList"></div>
+                                    <button class="btn btn-outline btn-sm w-full mt-2" id="addProjectBtn"><i
+                                            class="fa-solid fa-plus"></i> Add Project</button>
+                                </div>
+                            </div>
+
+                            <!-- Skills -->
+                            <div class="accordion-item">
+                                <button class="accordion-btn">
+                                    <i class="fa-solid fa-code"></i> Skills
+                                    <i class="fa-solid fa-chevron-down chevron"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <div class="form-group">
+                                        <label>Skills (Comma separated)</label>
+                                        <textarea id="skillsInput" rows="3"
+                                            maxlength="1000">JavaScript, TypeScript, React, Node.js, Python, SQL, Git, Docker, AWS, Agile</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Certifications -->
+                            <div class="accordion-item">
+                                <button class="accordion-btn">
+                                    <i class="fa-solid fa-certificate"></i> Certifications
+                                    <i class="fa-solid fa-chevron-down chevron"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <div id="certsList">
+                                        <div class="form-card cert-item">
+                                            <button class="delete-entry-btn" title="Remove"><i
+                                                    class="fa-solid fa-trash-can"></i></button>
+                                            <div class="form-group"><label>Certification Name</label><input type="text"
+                                                    class="cert-name" value="AWS Certified Solutions Architect"
+                                                    maxlength="150"></div>
+                                            <div class="form-group"><label>Issuer & Year</label><input type="text"
+                                                    class="cert-issuer" value="Amazon Web Services — 2023"
+                                                    maxlength="150"></div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm w-full mt-2" id="addCertBtn"><i
+                                            class="fa-solid fa-plus"></i> Add Certification</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div class="builder-preview" data-animate="fade-up">
+                        <div class="preview-actions">
+                            <span class="preview-badge"><i class="fa-solid fa-shield-halved"></i> ATS Compliant
+                                Format</span>
+                            <div class="download-btns">
+                                <button class="btn btn-primary btn-sm" id="downloadPdfBtn">
+                                    <i class="fa-solid fa-file-pdf"></i> PDF
+                                </button>
+                                <button class="btn btn-outline btn-sm" id="downloadDocBtn">
+                                    <i class="fa-solid fa-file-word"></i> Word
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Template Selector -->
+                        <div class="template-selector" id="templateSelector">
+                            <div class="template-option active" data-template="classic">
+                                <i class="fa-solid fa-file-lines"></i>
+                                <span>Classic</span>
+                            </div>
+                            <div class="template-option" data-template="modern">
+                                <i class="fa-solid fa-table-columns"></i>
+                                <span>Modern</span>
+                            </div>
+                            <div class="template-option" data-template="executive">
+                                <i class="fa-solid fa-crown"></i>
+                                <span>Executive</span>
+                            </div>
+                            <div class="template-option" data-template="compact">
+                                <i class="fa-solid fa-compress"></i>
+                                <span>Compact</span>
+                            </div>
+                        </div>
+
+                        <div class="resume-paper" id="resumePreviewOutput"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== ATS TIPS VIEW ========== -->
+        <section id="tipsView" class="view hidden-view">
+            <div class="container">
+                <div class="hero" data-animate="fade-up">
+                    <h1 class="hero-title font-heading tracking-tight">ATS Best Practices<br>& <span
+                            class="gradient-text bg-clip-text">Pro Tips</span></h1>
+                    <p class="hero-subtitle text-slate-400 text-lg leading-relaxed max-w-2xl mx-auto">Everything you
+                        need to know to beat Applicant Tracking Systems and land
+                        more interviews.</p>
+                </div>
+
+                <div class="tips-grid" data-animate="fade-up">
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">01</div>
+                        <h3 class="font-heading font-semibold">Use Standard Section Headings</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Stick to recognizable headings like <strong
+                                class="text-white/80">"Work Experience"</strong>,
+                            <strong class="text-white/80">"Education"</strong>, <strong
+                                class="text-white/80">"Skills"</strong>, and <strong
+                                class="text-white/80">"Projects"</strong>.
+                            Creative headings like "My Journey" confuse parsers.
+                        </p>
+                    </div>
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">02</div>
+                        <h3 class="font-heading font-semibold">Avoid Tables, Columns & Graphics</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Most ATS cannot parse multi-column layouts,
+                            tables, images, or text boxes. Use a simple,
+                            single-column format with clear hierarchy.</p>
+                    </div>
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">03</div>
+                        <h3 class="font-heading font-semibold">Mirror Job Description Keywords</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Copy relevant keywords and phrases directly
+                            from the job posting. ATS systems rank resumes by
+                            keyword match percentage.</p>
+                    </div>
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">04</div>
+                        <h3 class="font-heading font-semibold">Use a Standard File Format</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Submit your resume as a <strong
+                                class="text-white/80">.docx</strong> or <strong class="text-white/80">.pdf</strong>
+                            file. Avoid .jpg,
+                            .png, or complex PDF designs with embedded fonts.</p>
+                    </div>
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">05</div>
+                        <h3 class="font-heading font-semibold">Include a Professional Summary</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">A 2-3 sentence summary at the top helps ATS
+                            identify your profile category and seniority
+                            level quickly.</p>
+                    </div>
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">06</div>
+                        <h3 class="font-heading font-semibold">Quantify Your Achievements</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Instead of "improved performance", write
+                            "improved page load speed by 40%, increasing user
+                            retention by 15%".</p>
+                    </div>
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">07</div>
+                        <h3 class="font-heading font-semibold">Spell Out Acronyms</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Write "Search Engine Optimization (SEO)" the
+                            first time. Some ATS search for the full term,
+                            others for the acronym.</p>
+                    </div>
+                    <div
+                        class="tip-card glass-panel group hover:scale-[1.02] transition-all duration-300 hover:border-brand-primary/20">
+                        <div class="tip-number group-hover:text-brand-primary transition-colors">08</div>
+                        <h3 class="font-heading font-semibold">Use Simple Bullet Points</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Stick to standard bullet characters (•, -, *).
+                            Fancy icons or custom symbols get stripped or
+                            garbled by parsers.</p>
+                    </div>
+                </div>
+
+                <div class="cta-box glass-panel hover:border-brand-primary/30 transition-all duration-300"
+                    data-animate="fade-up">
+                    <h3 class="font-heading font-semibold text-xl">Ready to optimize your resume?</h3>
+                    <p class="text-slate-400 mt-2">Use our free tools to check and build ATS-friendly resumes.</p>
+                    <div class="cta-btns mt-5 flex flex-wrap gap-3 justify-center">
+                        <button
+                            class="btn btn-primary hover:scale-105 transition-transform shadow-lg shadow-brand-primary/25"
+                            id="ctaCheckBtn"><i class="fa-solid fa-magnifying-glass-chart"></i> Check Resume</button>
+                        <button class="btn btn-outline hover:scale-105 transition-transform hover:bg-white/5"
+                            id="ctaBuildBtn"><i class="fa-solid fa-pen-ruler"></i> Build
+                            Resume</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer border-t border-white/5" data-animate="fade-up">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="logo"><i class="fa-solid fa-file-contract"></i> ATS<span>Pro</span></div>
+                <p class="text-slate-400 text-sm mt-2">Free resume optimization tools built for job seekers.</p>
+                <nav class="footer-features mt-3 flex flex-wrap gap-2">
+                    <span class="px-2 py-1 rounded text-xs bg-white/5 text-slate-400">ATS Checker</span>
+                    <span class="px-2 py-1 rounded text-xs bg-white/5 text-slate-400">Resume Builder</span>
+                    <span class="px-2 py-1 rounded text-xs bg-white/5 text-slate-400">PDF Export</span>
+                    <span class="px-2 py-1 rounded text-xs bg-white/5 text-slate-400">Word Export</span>
+                    <span class="px-2 py-1 rounded text-xs bg-white/5 text-slate-400">ATS Tips</span>
+                </nav>
+            </div>
+            <div class="footer-links">
+                <h4 class="font-heading font-semibold text-sm uppercase tracking-wider text-white/70">Quick Links</h4>
+                <button class="footer-link hover:text-brand-primary transition-colors" data-target="checkerView">ATS
+                    Checker</button>
+                <button class="footer-link hover:text-brand-primary transition-colors" data-target="builderView">Resume
+                    Builder</button>
+                <button class="footer-link hover:text-brand-primary transition-colors" data-target="tipsView">ATS
+                    Tips</button>
+            </div>
+            <div class="footer-links">
+                <h4 class="font-heading font-semibold text-sm uppercase tracking-wider text-white/70">Resources</h4>
+                <a href="#" class="hover:text-brand-primary transition-colors">Resume Templates</a>
+                <a href="#" class="hover:text-brand-primary transition-colors">Cover Letter Guide</a>
+                <a href="#" class="hover:text-brand-primary transition-colors">Interview Tips</a>
+            </div>
+        </div>
+        <div class="container">
+            <div class="footer-bottom border-t border-white/5 pt-6 mt-6">
+                <p class="text-slate-500 text-sm">&copy; 2026 ATS Pro. 100% Free. Made for job seekers worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
